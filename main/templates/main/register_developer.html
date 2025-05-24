@@ -1,0 +1,15 @@
+{% extends "main/base.html" %}
+{% load static crispy_forms_tags %}
+{% block content %}
+    <div class="container">
+        <h1>Register Developer ID</h1>
+        <p class="lead">
+            Use this form to get the authentication token needed to add AltStore
+            to your Apple Developer account.
+        </p>
+        <p>
+            Information on where to find your developer ID is available <a href="https://developer.apple.com/help/app-store-connect/distributing-apps-in-the-european-union/manage-distribution-on-an-alternative-app-marketplace" target="_blank">here</a>.
+        </p>
+        {% crispy form %}
+    </div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "main/base.html" %}
+{% load static crispy_forms_tags %}
+{% block content %}
+    <div class="container">
+        <h1>Process Alternative Distribution Package</h1>
+        <p class="lead">
+            Use this form ingest an Alternative Distribution Package (ADP) from Apple to AltStore and SourcePilot.
+        </p>
+        <p>
+            Information on where to find your ADP ID is available <a href="https://developer.apple.com/help/app-store-connect/distributing-apps-in-the-european-union/get-an-alternative-distribution-package-id" target="_blank">here</a>.
+        </p>
+        {% crispy form %}
+    </div>
+{% endblock %}

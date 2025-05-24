@@ -1,0 +1,308 @@
+{% extends "main/base.html" %}
+{% load static crispy_forms_field %}
+{% block head %}
+    {{ form.media }}
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'apps' %}">Apps</a></li>
+                <li class="breadcrumb-item active" aria-current="page">App</li>
+            </ol>
+        </nav>
+        <form action="" method="post" enctype="multipart/form-data">
+            <h1 class="d-flex align-items-center gap-3">
+                {% if app.icon %}
+                    <img src="{{ app.icon.url }}" alt="" class="app-icon">
+                {% endif %}
+                <span class="flex-grow-1">{% if app.name %}{{ app.name }}{% else %}Unnamed App{% endif %}</span>
+                <div class="btn-group">
+                    <a href="{% url 'delete_app' app.pk %}" class="btn btn-danger btn-lg">Delete</a>
+                    <button class="btn btn-primary btn-lg" type="submit">Save</button>
+                </div>
+            </h1>
+            {% if form.non_field_errors %}
+                <div class="alert alert-block alert-danger">
+                    {% if form_error_title %}<h4 class="alert-heading">{{ form_error_title }}</h4>{% endif %}
+                    <ul class="m-0">
+                        {{ form.non_field_errors|unordered_list }}
+                    </ul>
+                </div>
+            {% endif %}
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-floating">
+                        <input type="text" readonly class="form-control-plaintext" id="short-build-id"
+                               value="{{ app.bundle_id }}">
+                        <label for="short-build-id">Bundle ID</label>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-floating">
+                        <input type="text" readonly class="form-control-plaintext" id="short-build-id"
+                               value="{{ app.apple_app_id }}">
+                        <label for="short-build-id">Apple App ID</label>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    {% include "bootstrap5/layout/floating_field.html" with field=form.developer_name %}
+                    {% include "bootstrap5/layout/help_text_and_errors.html" with field=form.developer_name %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    {% include "bootstrap5/layout/floating_field.html" with field=form.name %}
+                    {% include "bootstrap5/layout/help_text_and_errors.html" with field=form.name %}
+                </div>
+                <div class="col-sm-8">
+                    {% include "bootstrap5/layout/floating_field.html" with field=form.subtitle %}
+                    {% include "bootstrap5/layout/help_text_and_errors.html" with field=form.subtitle %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="mb-3">
+                        <label for="{{ form.icon.id_for_label }}" class="form-label">Icon</label>
+                        <input type="file" name="{{ form.icon.name }}"
+                               class="form-control{% if form.icon.errors %} is-invalid{% endif %}">
+                        {% include "bootstrap5/layout/help_text_and_errors.html" with field=form.icon %}
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="mb-3">
+                        <label for="{{ form.tint_colour.id_for_label }}" class="form-label">Tint colour</label>
+                        {% crispy_field form.tint_colour 'class' 'form-control' field.tint_colour.label %}
+                    </div>
+                    {% include "bootstrap5/layout/help_text_and_errors.html" with field=form.tint_colour %}
+                </div>
+                <div class="col-sm-4 d-flex flex-column justify-content-end">
+                    {% include "bootstrap5/layout/floating_field.html" with field=form.category %}
+                    {% include "bootstrap5/layout/help_text_and_errors.html" with field=form.category %}
+                </div>
+            </div>
+            {% include "bootstrap5/layout/floating_field.html" with field=form.description %}
+            {% include "bootstrap5/layout/help_text_and_errors.html" with field=form.description %}
+            <hr/>
+            <h3 class="mt-3">Entitlements</h3>
+            <input type="hidden" name="entitlements" id="entitlements-input" value="">
+            <ul class="list-group" id="entitlements">
+                {% if app.entitlements.count %}
+                    {% for e in app.entitlements.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                            data-entitlement="{{ e.entitlement }}">
+                            <code>{{ e.entitlement }}</code>
+                            <button class="btn btn-sm btn-danger entitlement-delete-btn" type="button">Delete</button>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="list-group-item">
+                        No entitlements
+                    </li>
+                {% endif %}
+            </ul>
+            <div class="d-flex align-items-center gap-3 mt-3">
+                <div class="form-floating flex-grow-1">
+                    <input type="text" class="form-control" id="new-entitlement">
+                    <label for="new-entitlement">New entitlement</label>
+                </div>
+                <button class="btn btn-primary" id="new-entitlement-btn" type="button">Add</button>
+            </div>
+            <hr/>
+            <h3 class="mt-3">Privacy disclosures</h3>
+            <input type="hidden" name="privacy" id="privacy-input" value="">
+            <ul class="list-group" id="privacy">
+                {% if app.privacy.count %}
+                    {% for p in app.privacy.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-start"
+                            data-privacy="{{ p.privacy_key }}">
+                            <div>
+                                <code>{{ p.privacy_key }}</code>
+                                <p>{{ p.usage_description }}</p>
+                            </div>
+                            <button class="btn btn-sm btn-danger privacy-delete-btn" type="button">Delete</button>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="list-group-item">
+                        No disclosures
+                    </li>
+                {% endif %}
+            </ul>
+            <div class="form-floating flex-grow-1 mt-3">
+                <input type="text" class="form-control" id="new-privacy-key">
+                <label for="new-privacy-key">Key</label>
+            </div>
+            <div class="form-floating mt-2">
+                <textarea class="form-control" id="new-privacy-usage"></textarea>
+                <label for="new-privacy-usage">Usage description</label>
+            </div>
+            <button class="btn btn-primary mt-2" id="new-privacy-btn" type="button">Add</button>
+        </form>
+        <hr>
+        <h3 class="d-flex">
+            <span class="flex-grow-1">Builds</span>
+            <a href="{% url 'process_adp' %}" class="btn btn-success">Add build</a>
+        </h3>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Bundle #</th>
+                <th>Short bundle version</th>
+                <th>Marketing version</th>
+                <th>Public</th>
+                <th>Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for version in app.versions.all %}
+                <tr>
+                    <th scope="row"><a href="{% url 'edit_app_version' version.pk %}">{{ version.bundle_version }}</a></th>
+                    <td>{{ version.bundle_version_short_string }}</td>
+                    <td>{% if version.marketing_version %}{{ version.marketing_version }}{% else %}N/A{% endif %}</td>
+                    <td>{% if version.public %}Yes{% else %}No{% endif %}</td>
+                    <td>{{ version.date|date:"F d, Y" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+        window.addEventListener("load", function () {
+            const entitlementsInput = document.getElementById("entitlements-input");
+            const entitlementsElm = document.getElementById("entitlements");
+            const newEntitlementInput = document.getElementById("new-entitlement");
+            const newEntitlementBtn = document.getElementById("new-entitlement-btn");
+
+            const privacyInput = document.getElementById("privacy-input");
+            const privacyElm = document.getElementById("privacy");
+            const newPrivacyKeyInput = document.getElementById("new-privacy-key");
+            const newPrivacyDescInput = document.getElementById("new-privacy-usage");
+            const newPrivacyBtn = document.getElementById("new-privacy-btn");
+
+            let entitlements = [{% for e in app.entitlements.all %}
+                "{{ e.entitlement }}",
+            {% endfor %}];
+
+            function renderEntitlements() {
+                entitlementsElm.innerHTML = '';
+                if (entitlements.length === 0) {
+                    const noEntitlementsElm = document.createElement("li");
+                    noEntitlementsElm.classList.add("list-group-item");
+                    noEntitlementsElm.textContent = "No entitlements";
+                    entitlementsElm.appendChild(noEntitlementsElm);
+                } else {
+                    entitlements.forEach(function (entitlement) {
+                        const entitlementElm = document.createElement("li");
+                        entitlementElm.dataset.entitlement = entitlement;
+                        entitlementElm.classList.add("list-group-item");
+                        entitlementElm.classList.add("d-flex");
+                        entitlementElm.classList.add("justify-content-between");
+                        entitlementElm.classList.add("align-items-center");
+                        const entitlementCodeElm = document.createElement("code");
+                        entitlementCodeElm.textContent = entitlement;
+                        entitlementElm.appendChild(entitlementCodeElm);
+                        const entitlementDeleteBtn = document.createElement("button");
+                        entitlementDeleteBtn.classList.add("btn");
+                        entitlementDeleteBtn.classList.add("btn-sm");
+                        entitlementDeleteBtn.classList.add("btn-danger");
+                        entitlementDeleteBtn.type = "button";
+                        entitlementDeleteBtn.textContent = "Delete";
+                        entitlementDeleteBtn.addEventListener("click", deleteEntitlement);
+                        entitlementElm.appendChild(entitlementDeleteBtn);
+                        entitlementsElm.appendChild(entitlementElm);
+                    })
+                }
+
+                entitlementsInput.value = JSON.stringify(entitlements);
+            }
+
+            function deleteEntitlement(e) {
+                const entitlementElm = e.target.parentElement;
+                const i = entitlements.indexOf(entitlementElm.dataset.entitlement);
+                if (i > -1) {
+                    entitlements.splice(i, 1);
+                    renderEntitlements();
+                }
+            }
+
+            newEntitlementBtn.addEventListener("click", function () {
+                if (newEntitlementInput.value && newEntitlementInput.value.match(/^[a-zA-Z.-]+$/)) {
+                    if (!entitlements.includes(newEntitlementInput.value)) {
+                        entitlements.push(newEntitlementInput.value);
+                        renderEntitlements();
+                        newEntitlementInput.value = "";
+                    }
+                }
+            });
+
+            for (let btn of document.getElementsByClassName("entitlement-delete-btn")) {
+                btn.addEventListener("click", deleteEntitlement);
+            }
+
+            let privacy = {{% for p in app.privacy.all %}
+                "{{ p.privacy_key }}": "{{ p.usage_description }}",
+            {% endfor %}};
+
+            function renderPrivacy() {
+                privacyElm.innerHTML = '';
+                if (Object.keys(privacy).length === 0) {
+                    const noPrivacyElm = document.createElement("li");
+                    noPrivacyElm.classList.add("list-group-item");
+                    noPrivacyElm.textContent = "No disclosures";
+                    privacyElm.appendChild(noPrivacyElm);
+                } else {
+                    Object.entries(privacy).forEach(function ([key, value]) {
+                        const privacyItemElm = document.createElement("li");
+                        privacyItemElm.dataset.privacy = key;
+                        privacyItemElm.classList.add("list-group-item");
+                        privacyItemElm.classList.add("d-flex");
+                        privacyItemElm.classList.add("justify-content-between");
+                        privacyItemElm.classList.add("align-items-start");
+                        const privacyItemKeyElm = document.createElement("code");
+                        privacyItemKeyElm.textContent = key;
+                        const privacyItemDescElm = document.createElement("p");
+                        privacyItemDescElm.textContent = value;
+                        const privacyItemDataElm = document.createElement("div");
+                        privacyItemDataElm.appendChild(privacyItemKeyElm);
+                        privacyItemDataElm.appendChild(privacyItemDescElm);
+                        privacyItemElm.appendChild(privacyItemDataElm);
+                        const privacyItemDeleteBtn = document.createElement("button");
+                        privacyItemDeleteBtn.classList.add("btn");
+                        privacyItemDeleteBtn.classList.add("btn-sm");
+                        privacyItemDeleteBtn.classList.add("btn-danger");
+                        privacyItemDeleteBtn.type = "button";
+                        privacyItemDeleteBtn.textContent = "Delete";
+                        privacyItemDeleteBtn.addEventListener("click", deletePrivacyItem);
+                        privacyItemElm.appendChild(privacyItemDeleteBtn);
+                        privacyElm.appendChild(privacyItemElm);
+                    })
+                }
+
+                privacyInput.value = JSON.stringify(privacy);
+            }
+
+            function deletePrivacyItem(e) {
+                const privacyItemElm = e.target.parentElement;
+                delete privacy[privacyItemElm.dataset.privacy];
+                renderPrivacy();
+            }
+
+            newPrivacyBtn.addEventListener("click", function () {
+                if (newPrivacyKeyInput.value && newPrivacyDescInput.value && newPrivacyKeyInput.value.match(/^[a-zA-Z]+$/)) {
+                    if (!privacy.hasOwnProperty(newPrivacyKeyInput.value)) {
+                        privacy[newPrivacyKeyInput.value] = newPrivacyDescInput.value;
+                        renderPrivacy();
+                        newPrivacyKeyInput.value = "";
+                        newPrivacyDescInput.value = "";
+                    }
+                }
+            })
+
+            for (let btn of document.getElementsByClassName("privacy-delete-btn")) {
+                btn.addEventListener("click", deletePrivacyItem);
+            }
+        })
+    </script>
+{% endblock %}

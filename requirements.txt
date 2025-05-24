@@ -1,0 +1,5 @@
+Django
+celery
+niquests
+django-colorfield
+crispy-bootstrap5

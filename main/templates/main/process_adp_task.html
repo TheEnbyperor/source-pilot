@@ -1,0 +1,16 @@
+{% extends "main/base.html" %}
+{% load static crispy_forms_tags %}
+{% block content %}
+    <div class="container">
+        <h1>Processing Alternative Distribution Package...</h1>
+        <div class="d-flex align-items-center">
+            <strong role="status">This can take a while, please be patient...</strong>
+            <div class="spinner-border ms-3" aria-hidden="true"></div>
+        </div>
+    </div>
+    <script>
+        setTimeout(function () {
+            window.location.reload();
+        }, 2500);
+    </script>
+{% endblock %}

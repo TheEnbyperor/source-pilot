@@ -1,0 +1,44 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <h1 class="d-flex align-items-center gap-3">
+            <span class="flex-grow-1">Apps</span>
+            <a href="{% url 'process_adp' %}" class="btn btn-success">Add new app</a>
+        </h1>
+        <div class="row">
+            {% if apps %}
+                {% for app in apps %}
+                    <div class="col-sm-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title d-flex gap-2 align-items-center">
+                                    {% if app.icon %}
+                                        <img src="{{ app.icon.url }}" alt="" class="app-icon">
+                                    {% endif %}
+                                    {% if app.name %}{{ app.name }}{% else %}Unnamed App{% endif %}
+                                </h5>
+                                <p class="card-text">
+                                    Bundle ID: <code>{{ app.bundle_id }}</code><br/>
+                                    Apple App ID: <code>{{ app.apple_app_id }}</code><br/>
+                                    Current build: {{ app.versions.first.bundle_version }}<br/>
+                                    Last update: {{ app.versions.first.date|date:"F d, Y" }}
+                                </p>
+                                <div class="btn-group">
+                                    <a href="{% url 'edit_app' app.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                                    <a href="{% url 'delete_app' app.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col">
+                    <p class="lead">
+                        No apps, get started by <a href="{% url 'process_adp' %}">creating one</a>.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

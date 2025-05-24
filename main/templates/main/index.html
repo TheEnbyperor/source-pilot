@@ -1,0 +1,12 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <h1>Welcome to SourcePilot</h1>
+        <p class="lead">
+            SourcePilot helps you manage your AltStore PAL sources.
+            Get started by <a href="{% url 'add_source' %}">creating a source</a>
+            or <a href="{% url 'process_adp' %}">processing an Alternative Distribution Package</a>.
+        </p>
+    </div>
+{% endblock %}

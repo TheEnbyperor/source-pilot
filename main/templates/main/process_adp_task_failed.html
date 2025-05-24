@@ -1,0 +1,10 @@
+{% extends "main/base.html" %}
+{% load static crispy_forms_tags %}
+{% block content %}
+    <div class="container">
+        <h1>Alternative Distribution Package processing error</h1>
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    </div>
+{% endblock %}

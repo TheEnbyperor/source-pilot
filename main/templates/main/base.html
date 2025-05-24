@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>SourcePilot</title>
+
+    <link rel="stylesheet" href="{% static 'main/bootstrap-5.3.6-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'main/css/style.css' %}">
+
+    {% block head %}{% endblock %}
+</head>
+<body>
+<main class="d-flex flex-nowrap">
+    <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px;">
+        <a href="{% url 'index' %}"
+           class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+            <span class="fs-4">SourcePilot</span>
+        </a>
+        <hr/>
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item">
+                <a href="{% url 'sources' %}" class="nav-link text-white">Sources</a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'apps' %}" class="nav-link text-white">Apps</a>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-toggle nav-link text-white d-inline-flex align-items-center rounded border-0 collapsed"
+                        data-bs-toggle="collapse" data-bs-target="#util-collapse">
+                    Utilities
+                </button>
+                <div class="collapse" id="util-collapse">
+                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                        <li>
+                            <a href="{% url 'process_adp' %}"
+                               class="link-body-emphasis d-inline-flex text-decoration-none rounded">
+                                Process ADP
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'register_developer' %}"
+                               class="link-body-emphasis d-inline-flex text-decoration-none rounded">
+                                Register Developer ID
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+        <hr/>
+        <div class="dropdown">
+            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+               data-bs-toggle="dropdown">
+                <img src="{{ avatar_url }}" alt="" width="32" height="32" class="rounded-circle me-2">
+                <strong>{{ user.get_short_name }}</strong>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark text-small shadow" style="">
+                <li><a class="dropdown-item" href="#">...</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="#">Sign out</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="b-example-divider b-example-vr"></div>
+    <section class="flex-grow-1 pt-4 overflow-y-auto d-flex flex-column">
+        <div class="flex-grow-1">
+        {% block content %}{% endblock content %}
+        </div>
+        <footer class="pt-2 mt-3 text-body-secondary border-top">
+            <p>
+            &copy; {% now "Y" %} Q Misell. Licensed under the <a href="https://eupl.eu">European Union Public License v1.2</a>.
+            </p>
+        </footer>
+    </section>
+</main>
+<script src="{% static 'main/bootstrap-5.3.6-dist/js/bootstrap.bundle.min.js' %}"></script>
+<script>
+    async function copy(text) {
+        try {
+            await navigator.clipboard.writeText(text);
+        } catch (error) {
+            console.error("Failed to copy to clipboard:", error);
+        }
+    }
+</script>
+</body>
+</html>

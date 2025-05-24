@@ -1,0 +1,64 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'apps' %}">Apps</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'edit_app' app_version.app_id %}">App</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Build {{ app_version.bundle_version }}</li>
+            </ol>
+        </nav>
+        <form action="" method="post">
+        <h1 class="d-flex">
+            <span class="flex-grow-1">Bundle <code>{{ app_version.app.bundle_id }}</code></span>
+            <button class="btn btn-primary btn-lg" type="submit">Save</button>
+        </h1>
+        <h2>Build {{ app_version.bundle_version }}</h2>
+        {% if form.non_field_errors %}
+            <div class="alert alert-block alert-danger">
+                {% if form_error_title %}<h4 class="alert-heading">{{ form_error_title }}</h4>{% endif %}
+                <ul class="m-0">
+                    {{ form.non_field_errors|unordered_list }}
+                </ul>
+            </div>
+        {% endif %}
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-floating">
+                        <input type="text" readonly class="form-control-plaintext" id="short-build-id"
+                               value="{% if app_version.bundle_version_short_string  %}{{ app_version.bundle_version_short_string }}{% else %}N/A{% endif %}">
+                        <label for="short-build-id">Short bundle version</label>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-floating">
+                        <input type="text" readonly class="form-control-plaintext" id="short-build-id"
+                               value="{% if app_version.minimum_os_version %}{{ app_version.minimum_os_version }}{% else %}N/A{% endif %}">
+                        <label for="short-build-id">Minimum OS version</label>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-floating">
+                        <input type="text" readonly class="form-control-plaintext" id="short-build-id"
+                               value="{% if app_version.maximum_os_version %}{{ app_version.maximum_os_version }}{% else %}N/A{% endif %}">
+                        <label for="short-build-id">Maximum OS version</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    {% include "bootstrap5/layout/floating_field.html" with field=form.marketing_version %}
+                </div>
+                <div class="col-sm-4">
+                    {% include "bootstrap5/layout/floating_field.html" with field=form.date %}
+                </div>
+                <div class="col-sm-4 px-4 d-flex align-items-center">
+                    {% include "bootstrap5/layout/switch.html" with field=form.public %}
+                </div>
+            </div>
+            {% include "bootstrap5/layout/floating_field.html" with field=form.description %}
+        </form>
+    </div>
+{% endblock %}

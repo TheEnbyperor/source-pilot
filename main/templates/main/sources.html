@@ -1,0 +1,45 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <h1 class="d-flex align-items-center gap-3">
+            <span class="flex-grow-1">Sources</span>
+            <a href="{% url 'add_source' %}" class="btn btn-success">Add new source</a>
+        </h1>
+        <div class="row">
+            {% if sources %}
+                {% for source in sources %}
+                    <div class="col-sm-4">
+                        <div class="card">
+                            {% if source.header %}
+                                <img src="{{ source.header.url }}" class="card-img-top source-header" alt="">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title d-flex gap-2 align-items-center">
+                                    {% if source.icon %}
+                                        <img src="{{ source.icon.url }}" alt="" class="app-icon">
+                                    {% endif %}
+                                    {{ source.name }}
+                                </h5>
+                                <p class="card-text">
+                                    {{ source.subtitle }}
+                                </p>
+                                <div class="btn-group">
+                                    <a href="{% url 'edit_source' source.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                                    <a href="{% url 'delete_source' source.pk %}"
+                                       class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col">
+                    <p class="lead">
+                        No sources, get started by <a href="{% url 'add_source' %}">creating one</a>.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

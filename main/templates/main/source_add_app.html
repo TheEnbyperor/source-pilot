@@ -1,0 +1,50 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'sources' %}">Sources</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'edit_source' source.pk %}">Source</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Add app</li>
+            </ol>
+        </nav>
+        <h1>Add app</h1>
+        <h2 class="d-flex align-items-center gap-3">
+            {% if source.icon %}
+                <img src="{{ source.icon.url }}" alt="" class="app-icon">
+            {% endif %}
+            <span class="flex-grow-1">{{ source.name }}</span>
+        </h2>
+        <h3 class="mt-3">Apps</h3>
+        {% if apps.count %}
+            <table class="table table-hover" style="height: fit-content;">
+                <tbody>
+                {% for app in apps.all %}
+                    <tr>
+                        <th scope="row">
+                            <div class="d-flex align-items-center gap-2 h-100">
+                                {% if app.icon %}
+                                    <img src="{{ app.icon.url }}" alt="" class="app-icon">
+                                {% endif %}
+                                {% if app.name %}{{ app.name }}{% else %}Unnamed App{% endif %}
+                            </div>
+                        </th>
+                        <td>
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <button class="btn btn-primary" name="app_id" value="{{ app.pk }}">Add</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="lead">
+                There are no apps available to add to this source.
+                <a href="{% url 'process_adp' %}">Add a new one?</a>
+            </p>
+        {% endif %}
+    </div>
+{% endblock %}
